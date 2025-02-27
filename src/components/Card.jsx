@@ -13,7 +13,7 @@ const getStatusColor = (status) => {
   }
 };
 
-const Card = ({ title, description, location, status }) => {
+const Card = ({ title, description, location, status, name }) => {
   return (
     <div className="w-72 rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md">
       {/* Upper Section */}
@@ -92,7 +92,7 @@ const Card = ({ title, description, location, status }) => {
             />
           </div>
           <div>
-            <div className="text-sm font-medium text-gray-900">John Doe</div>
+            <div className="text-sm font-medium text-gray-900">{name}</div>
             <div className="text-xs text-gray-500">Engineering</div>
           </div>
         </div>

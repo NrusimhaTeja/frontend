@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import Profile from "./components/Profile";
 import Feed from "./components/Feed";
 
-
 const App = () => {
   return (
     <div>
