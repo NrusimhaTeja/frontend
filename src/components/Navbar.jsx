@@ -46,7 +46,7 @@ const Navbar = () => {
                   >
                     <div className="h-8 w-8 overflow-hidden rounded-full ring-2 ring-blue-900">
                       <img
-                        src="/api/placeholder/400/320"
+                        src={user.profilePhoto.url || "/api/placeholder/400/320"}
                         alt="User"
                         className="h-full w-full object-cover"
                       />

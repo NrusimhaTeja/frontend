@@ -4,10 +4,12 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constants";
+import Signup from "./Signup";
 
 const Login = () => {
   const [email, setEmail] = useState("Nrusimha@gmail.com");
   const [password, setPassword] = useState("Nrusimha@11");
+  const [showSignupModal, setShowSignupModal] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -23,11 +25,19 @@ const Login = () => {
           withCredentials: true,
         }
       );
+      console.log(data.data);
       dispatch(addUser(data.data));
       navigate("/");
     } catch (err) {
       console.log(err.message);
     }
+  };
+
+  const handleSignupSuccess = (email) => {
+    // Set email from successful signup
+    setEmail(email);
+    setPassword("");
+    setShowSignupModal(false);
   };
 
   return (
@@ -103,13 +113,24 @@ const Login = () => {
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+              <button 
+                onClick={() => setShowSignupModal(true)}
+                className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
+              >
                 Sign up
-              </a>
+              </button>
             </p>
           </div>
         </div>
       </div>
+
+      {/* Signup Modal */}
+      {showSignupModal && (
+        <Signup 
+          onClose={() => setShowSignupModal(false)}
+          onSignupSuccess={handleSignupSuccess}
+        />
+      )}
     </div>
   );
 };

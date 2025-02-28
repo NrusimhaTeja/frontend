@@ -13,7 +13,7 @@ const getStatusColor = (status) => {
   }
 };
 
-const Card = ({ title, description, location, status, name }) => {
+const Card = ({ title, description, location, status, name, itemImg }) => {
   return (
     <div className="w-72 rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md">
       {/* Upper Section */}
@@ -22,7 +22,7 @@ const Card = ({ title, description, location, status, name }) => {
           {/* Image Section */}
           <div className="w-1/2">
             <img
-              src="../../public/assets/test.png"
+              src={itemImg || "../../public/assets/test.png"}
               alt="Item"
               className="h-full w-full object-cover"
             />

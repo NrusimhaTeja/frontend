@@ -26,6 +26,7 @@ const Feed = () => {
       const response = await axios.get(`${BASE_URL}item/${status}`, {
         withCredentials: true,
       });
+      console.log(response.data);
       setItems(response.data);
     } catch (err) {
       console.error("Error fetching items:", err);
@@ -65,6 +66,7 @@ const Feed = () => {
               location={item.location}
               status={item.status}
               name={item.currentHolder.firstName}
+              itemImg={item?.images[0]?.url}
             />
           ))}
         </div>
