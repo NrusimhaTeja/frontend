@@ -62,8 +62,8 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/report" className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-                        Report
+                      <Link to="/request" className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+                        Requests
                       </Link>
                     </li>
                     <li>

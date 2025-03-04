@@ -26,15 +26,15 @@ const Signup = ({ onClose, onSignupSuccess }) => {
     setPhotoPreview(null);
     setSignupSuccess(false);
     setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        department: "",
-        designation: "",
-        gender: "",
-        id: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      department: "",
+      designation: "",
+      gender: "",
+      id: "",
     });
   };
 
