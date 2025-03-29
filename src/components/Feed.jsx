@@ -1,47 +1,172 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import Card from "./Card";
+import LostItemCard from "./LostItemCard";
+import ReceivedItemCard from "./ReceivedItemCard";
+import SubmittedItemCard from "./SubmittedItemCard";
 import AddButton from "./AddButton";
-import AddItemForm from "./AddItemForm";
+import FoundItemForm from "./FoundItemForm";
+import LostItemForm from "./LostItemForm";
 import EmptyState from "./EmptyState";
 import TabNavigation from "./TabNavigation";
 import { useSelector } from "react-redux";
-import { Store } from "lucide-react";
 
 const Feed = () => {
-  const [selectedTab, setSelectedTab] = useState("found");
+  const [selectedTab, setSelectedTab] = useState("");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const user = useSelector((Store) => Store.user);
-  console.log(user)
+  const user = useSelector((state) => state.user);
 
-  const tabs = [
-    { id: "found", label: "Found Items" },
-    { id: "lost", label: "Lost Items" },
-    { id: "claimed", label: "Claimed Items" },
-  ];
+  // Define tabs based on user role
+  const getTabs = () => {
+    // Base tabs for all users
+    const baseTabs = [
+      { id: "received", label: "Found Items" },
+      { id: "lost", label: "Lost Items" }
+    ];
+    
+    // Add submitted tab for security roles
+    if (user?.role === "securityGuard" || user?.role === "securityOfficer" || user?.role === "admin") {
+      baseTabs.push({ id: "submitted", label: "Submitted Items" });
+    }
+    
+    return baseTabs;
+  };
+
+
+  const tabs = getTabs();
 
   const fetchItems = async (status) => {
     setLoading(true);
     try {
-      console.log(`${BASE_URL}items/${status}`);
-      const response = await axios.get(`${BASE_URL}item/${status}`, {
+      if (!user) {
+        setItems([]);
+        return;
+      }
+      console.log("Fetching items for status:", status);
+      
+      // Map the tab ID to the correct API endpoint status parameter
+      let apiStatus = status;
+      console.log("yo")
+      
+      const response = await axios.get(`${BASE_URL}api/items/status/${apiStatus}`, {
         withCredentials: true,
       });
-      console.log(response.data);
+      console.log("API Response:", response.data);
       setItems(response.data);
     } catch (err) {
       console.error("Error fetching items:", err);
+      // Handle forbidden access or other errors
+      if (err.response && err.response.status === 403) {
+        setItems([]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
+  // Set initial tab based on user role
+useEffect(() => {
+  if (!user) return;
+  const availableTabs = getTabs().map(tab => tab.id);
+  let initialTab = availableTabs[0];
+  
+  if (user?.role === "securityGuard") {
+    initialTab = "submitted"; // Default to 'submitted' for securityGuard
+  }
+  console.log(initialTab)
+
+  setSelectedTab(initialTab);
+}, [user?.role]);
+
+// Fetch items only AFTER selectedTab is set
+useEffect(() => {
+  if (selectedTab) {
     fetchItems(selectedTab);
-  }, [selectedTab]);
+  }
+}, [selectedTab]);
+
+  const renderForm = () => {
+    switch (selectedTab) {
+      case 'received':
+        return (
+          <FoundItemForm
+            isOpen={isFormOpen}
+            onClose={() => setIsFormOpen(false)}
+            onItemAdded={() => fetchItems(selectedTab)}
+          />
+        );
+      case 'lost':
+        return (
+          <LostItemForm
+            isOpen={isFormOpen}
+            onClose={() => setIsFormOpen(false)}
+            onItemAdded={() => fetchItems(selectedTab)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderItemCard = (item) => {
+    switch (selectedTab) {
+      case 'received':
+        return (
+          <ReceivedItemCard
+            key={item._id}
+            itemId={item._id}
+            itemType={item.itemType}
+            description={item.description}
+            location={item.location}
+            status={item.status}
+            uniqueMarks={item.uniqueMarks}
+            currentHolder={item.currentHolder}
+            images={item.images}
+            questions={item.questions}
+            time={item.time}
+          />
+        );
+      case 'lost':
+        return (
+          <LostItemCard
+            key={item._id}
+            itemId={item._id}
+            itemType={item.itemType}
+            description={item.description}
+            location={item.location}
+            status={item.status}
+            uniqueMarks={item.uniqueMarks}
+            owner={item.owner}
+            images={item.images}
+            time={item.time}
+          />
+        );
+      case 'submitted':
+        return (
+          <SubmittedItemCard
+            key={item._id}
+            itemId={item._id}
+            itemType={item.itemType}
+            description={item.description}
+            location={item.location}
+            status={item.status}
+            uniqueMarks={item.uniqueMarks}
+            foundBy={item.foundBy}
+            images={item.images}
+            time={item.time}
+            token={item.token}
+            onStatusUpdate={() => fetchItems(selectedTab)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Show add button only for certain tabs
+  const showAddButton = selectedTab === 'lost' || selectedTab === 'received';
 
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -62,43 +187,7 @@ const Feed = () => {
       {/* Items Grid */}
       {!loading && items.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {items.map((item) =>  (
-                <Card
-                  key={item._id}
-                  itemId={item._id}
-                  title={item.title}
-                  description={item.description}
-                  location={item.location}
-                  status={item.status}
-                  itemImg={item?.images[0]?.url}
-                  name={
-                    item.status === "found"
-                      ? item.currentHolder.firstName
-                      : item.owner.firstName
-                  }
-                  profilePhoto={
-                    item.status === "found"
-                      ? item.currentHolder.profilePhoto.url
-                      : item.owner.profilePhoto.url
-                  }
-                  designation={
-                    item.status === "found"
-                      ? item.currentHolder.designation
-                      : item.owner.designation
-                  }
-                  department={
-                    item.status === "found"
-                      ? item.currentHolder.department
-                      : item.owner.department
-                  }
-                  id={
-                    item.status === "found"
-                      ? item.currentHolder.id
-                      : item.owner.id
-                  }
-                />
-              )
-          )}
+          {items.map((item) => renderItemCard(item))}
         </div>
       )}
 
@@ -108,17 +197,10 @@ const Feed = () => {
       )}
 
       {/* Add Button - Only show for Lost and Found tabs */}
-      {(selectedTab === "found" || selectedTab === "lost") && (
-        <AddButton onClick={() => setIsFormOpen(true)} />
-      )}
+      {showAddButton && <AddButton onClick={() => setIsFormOpen(true)} />}
 
-      {/* Form Modal */}
-      <AddItemForm
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        status={selectedTab}
-        onItemAdded={() => fetchItems(selectedTab)}
-      />
+      {/* Dynamic Form Modal */}
+      {renderForm()}
     </div>
   );
 };

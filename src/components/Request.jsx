@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import Card from "./Card";
-import AddButton from "./AddButton";
-import AddItemForm from "./AddItemForm";
-import EmptyState from "./EmptyState";
 import TabNavigation from "./TabNavigation";
 import { useSelector } from "react-redux";
-import { Store } from "lucide-react";
 import RequestCard from "./RequestCard";
 
 const Request = () => {
