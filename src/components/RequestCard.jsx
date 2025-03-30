@@ -1,124 +1,68 @@
-import React, { useState } from "react";
-import { formatDate } from "../utils/date";
-import { getActionLabel, getStatusIndicator } from "../utils/request.jsx";
-import RequestTypeBanner from "./RequestTypeBanner";
-import ItemDetails from "./ItemDetails";
-import UserInfoWithStatus from "./UserInfoWithStatus";
-import ActionButtons from "./ActionButtons";
-import ImageGallery from "./ImageGallery"; // Assuming you have an ImageGallery component
+import React from "react";
+import { MapPin, Tag, Key } from "lucide-react";
 
-const RequestDetails = ({ request, isOwnRequest }) => {
-  const { requestType, answers, proofImages, additionalNotes } = request;
+const DEFAULT_IMAGE =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
 
-  // Render for claim requests
-  if (requestType === "claim") {
-    return (
-      <div className="space-y-4 mt-4">
-        {/* Questions and Answers */}
-        {answers && answers.length > 0 && (
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <h3 className="font-semibold text-gray-700 mb-2">
-              Verification Questions
-            </h3>
-            {answers.map((answer, index) => (
-              <div key={index} className="mb-2">
-                <p className="text-sm text-gray-600">{answer}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Proof Images */}
-        {proofImages && proofImages.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-gray-700 mb-2">Proof Images</h3>
-            <ImageGallery images={proofImages} />
-          </div>
-        )}
-
-        {/* Additional Notes */}
-        {additionalNotes && (
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <h3 className="font-semibold text-gray-700 mb-2">
-              Additional Notes
-            </h3>
-            <p className="text-sm text-gray-600">{additionalNotes}</p>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Render for return requests
-  if (requestType === "return") {
-    return (
-      <div className="space-y-4 mt-4">
-        {/* Proof Images */}
-        {proofImages && proofImages.length > 0 && (
-          <div>
-            <h3 className="font-semibold text-gray-700 mb-2">
-              Return Proof Images
-            </h3>
-            <ImageGallery images={proofImages} />
-          </div>
-        )}
-
-        {/* Additional Notes */}
-        {additionalNotes && (
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <h3 className="font-semibold text-gray-700 mb-2">
-              Additional Notes
-            </h3>
-            <p className="text-sm text-gray-600">{additionalNotes}</p>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Default case for other request types
-  return null;
-};
-
-const RequestCard = ({ request, isOwnRequest = false }) => {
-  if (!request) return null;
-
-  const { itemId, requestType, status, requestedBy, requestedTo, createdAt } =
-    request;
-
-  const displayUser = isOwnRequest ? requestedTo : requestedBy;
-  const actionLabel = getActionLabel(isOwnRequest, requestType, displayUser);
-  const statusInfo = getStatusIndicator(status);
-  const formattedDate = formatDate(createdAt);
+const RequestCard = ({ verifiedDescription, images, token }) => {
+  const safeImages =
+    images && images.length > 0 ? images : [{ url: DEFAULT_IMAGE }];
 
   return (
-    <div className="w-full bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-      <RequestTypeBanner
-        requestType={requestType}
-        actionLabel={actionLabel}
-        createdAt={createdAt}
-        formattedDate={formattedDate}
-      />
-
-      <div className="p-4">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <ItemDetails itemId={itemId} />
-          <UserInfoWithStatus
-            displayUser={displayUser}
-            statusInfo={statusInfo}
+    <>
+      <div className="w-full max-w-xs mx-auto rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+        {/* Image Section */}
+        <div className="relative h-48 overflow-hidden">
+          <img
+            src={safeImages[0].url || DEFAULT_IMAGE}
+            alt="Verified Item"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.src = DEFAULT_IMAGE;
+            }}
           />
         </div>
 
-        {/* Conditional Rendering of Request Details */}
-        <RequestDetails request={request} isOwnRequest={isOwnRequest} />
+        {/* Details Section */}
+        <div className="p-4 space-y-3">
+          {/* Title and Description */}
+          <div>
+            <div className="flex items-center space-x-2">
+              <Tag className="h-5 w-5 text-blue-600" />
+              <h3 className="text-base font-semibold text-gray-900 line-clamp-1">
+                Description
+              </h3>
+            </div>
+            <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+              {verifiedDescription || "No description available"}
+            </p>
+          </div>
 
-        <ActionButtons
-          status={status}
-          isOwnRequest={isOwnRequest}
-          displayUser={displayUser}
-        />
+          {/* Token Display */}
+          <div className="flex flex-col border-t pt-3 mt-3">
+            <div className="flex items-center mb-2">
+              <Key className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="text-xs font-medium text-gray-700">
+                Your Token:
+              </span>
+            </div>
+            {token ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-2 text-center">
+                <span className="font-mono text-sm text-blue-700 font-semibold tracking-wide">
+                  {token}
+                </span>
+              </div>
+            ) : (
+              <div className="bg-gray-50 border border-gray-200 rounded-md p-2 text-center">
+                <span className="font-mono text-sm text-gray-500">
+                  No token available
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

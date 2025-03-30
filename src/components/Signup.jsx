@@ -102,7 +102,7 @@ const Signup = ({ onClose, onSignupSuccess }) => {
         signupData.append("profilePhoto", profilePhoto);
       }
 
-      const response = await axios.post(BASE_URL + "signup", signupData, {
+      const response = await axios.post(BASE_URL + "api/auth/register", signupData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",

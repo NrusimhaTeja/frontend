@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import TabNavigation from "./TabNavigation";
 import { useSelector } from "react-redux";
 import RequestCard from "./RequestCard";
+import ReceivedRequestCard from "./ReceivedRequestCard";
 
 const Request = () => {
-  const [selectedTab, setSelectedTab] = useState("send");
-  const [items, setItems] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const user = useSelector((Store) => Store.user);
-  console.log(user);
-
-  const tabs = [
-    { id: "send", label: "Send Requests" },
-    { id: "receive", label: "Received Requests" },
-  ];
-
-  const fetchItems = async (status) => {
+  
+  // Determine if the user is a security Officer
+  const isSecurityOfficer = user?.role === "securityOfficer";
+  
+  const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}request/${selectedTab}`, {
+      // Use different endpoint based on user role
+      const endpoint = isSecurityOfficer 
+        ? `${BASE_URL}api/items/received-requests` 
+        : `${BASE_URL}api/items/my-request-tokens`;
+      
+      const response = await axios.get(endpoint, {
         withCredentials: true,
       });
+      
       console.log(response.data);
-      setItems(response.data);
+      setRequests(response.data);
     } catch (err) {
-      console.error("Error fetching items:", err);
+      console.error(`Error fetching ${isSecurityOfficer ? "Received" : ""} Requests:`, err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchItems(selectedTab);
-  }, [selectedTab]);
+    fetchItems();
+  }, [isSecurityOfficer]); // Re-fetch when role changes
 
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Tabs Navigation */}
-      <TabNavigation
-        tabs={tabs}
-        selectedTab={selectedTab}
-        onTabChange={setSelectedTab}
-      />
-
+      {/* Page Title */}
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        {isSecurityOfficer ? "Received Requests" : "My Requests"}
+      </h2>
+      
       {/* Loading Indicator */}
       {loading && (
         <div className="flex justify-center items-center py-12">
@@ -52,21 +52,35 @@ const Request = () => {
         </div>
       )}
 
-      {/* Items List - Changed from grid to flex column for full width cards */}
-      {!loading && items.length > 0 && (
-        <div className="flex flex-col space-y-4">
-          {items.map((item) => (
-            <RequestCard
-              key={item._id || item.id}
-              request={item}
-              isOwnRequest={selectedTab === "send" ? true : false}
-            />
+      {/* Items List */}
+      {!loading && requests.length > 0 && (
+        <div className="flex flex-col space-y-6">
+          {requests.map((request) => (
+            <React.Fragment key={request._id}>
+              {isSecurityOfficer ? (
+                <ReceivedRequestCard request={request} />
+              ) : (
+                <RequestCard
+                  verifiedDescription={request.itemId.verifiedDescription}
+                  images={request.itemId.images}
+                  token={request.token}
+                />
+              )}
+            </React.Fragment>
           ))}
         </div>
       )}
 
       {/* Empty State */}
-      {!loading && items.length === 0 && <div>No Requests Found</div>}
+      {!loading && requests.length === 0 && (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <p className="text-gray-500">
+            {isSecurityOfficer 
+              ? "No received requests found." 
+              : "No requests found."}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

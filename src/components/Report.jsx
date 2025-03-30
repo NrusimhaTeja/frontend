@@ -15,7 +15,7 @@ const Report = () => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BASE_URL}api/items/my-tokens`, {
+        const response = await axios.get(`${BASE_URL}api/items/my-item-tokens`, {
           withCredentials: true,
         });
         console.log(response.data);

@@ -41,9 +41,6 @@ const ClaimItemModal = ({ isOpen, onClose, itemId, questions = [], title }) => {
     try {
       const formDataObj = new FormData();
 
-      // Append item ID
-      formDataObj.append("itemId", itemId);
-
       // Append answers
       const answers = Object.entries(formData).map(([question, answer]) => ({
         question,
@@ -74,7 +71,7 @@ const ClaimItemModal = ({ isOpen, onClose, itemId, questions = [], title }) => {
 
       // Detailed axios config
       const response = await axios.post(
-        `${BASE_URL}request/send/claim/${itemId}`,
+        `${BASE_URL}api/items/${itemId}/claim`,
         formDataObj,
         {
           withCredentials: true,
@@ -92,13 +89,6 @@ const ClaimItemModal = ({ isOpen, onClose, itemId, questions = [], title }) => {
       );
 
       console.log("Server Response:", response.data);
-
-      // await axios.post(`${BASE_URL}request/send/claim/${itemId}`, formDataObj, {
-      //   withCredentials: true,
-      //   headers: {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      // });
 
       // Add delay to ensure toast is visible before closing
       await new Promise((resolve) => {
@@ -178,7 +168,7 @@ const ClaimItemModal = ({ isOpen, onClose, itemId, questions = [], title }) => {
               htmlFor="additional-notes"
               className="block text-gray-700 mb-1 flex items-center"
             >
-              <MessageCircle size={16} className="mr-2" /> Additional Notes
+              <MessageCircle size={16} className="mr-2" /> Description
             </label>
             <textarea
               id="additional-notes"

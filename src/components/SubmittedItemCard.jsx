@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Tag, Calendar, Check, X } from "lucide-react";
+import { MapPin, Tag, Calendar, Check, X, User, Image } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 
@@ -10,6 +10,10 @@ const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case "submitted":
       return "bg-blue-500 text-white ring-blue-500/20";
+    case "received":
+      return "bg-emerald-500 text-white ring-emerald-500/20";
+    case "rejected":
+      return "bg-red-500 text-white ring-red-500/20";
     default:
       return "bg-gray-400 text-white ring-gray-400/20";
   }
@@ -21,7 +25,7 @@ const SubmittedItemCard = ({
   description,
   location,
   status,
-  uniqueMarks,
+  foundBy,
   images,
   time,
   onStatusUpdate,
@@ -30,6 +34,8 @@ const SubmittedItemCard = ({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState("");
   const [notes, setNotes] = useState("");
+  const [imageError, setImageError] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const safeImages =
     images && images.length > 0 ? images : [{ url: DEFAULT_IMAGE }];
@@ -72,21 +78,55 @@ const SubmittedItemCard = ({
     }
   };
 
+  const navigateImage = (index) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
     <div className="w-full max-w-xs mx-auto rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden h-full flex flex-col">
-      {/* Image Section - Fixed Height */}
-      <div className="relative h-40 w-full overflow-hidden flex-shrink-0">
+      {/* Status Badge */}
+      <div className="absolute top-2 right-2 z-10">
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(status)}`}>
+          {status || "Unknown"}
+        </span>
+      </div>
+      
+      {/* Image Section */}
+      <div className="relative h-64 w-full overflow-hidden flex-shrink-0">
         <img
-          src={safeImages[0].url || DEFAULT_IMAGE}
+          src={imageError ? DEFAULT_IMAGE : (safeImages[currentImageIndex]?.url || DEFAULT_IMAGE)}
           alt="Submitted Item"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain bg-gray-100"
           onError={(e) => {
+            setImageError(true);
             e.target.src = DEFAULT_IMAGE;
           }}
         />
+        
+        {/* Image Navigation for Multiple Images */}
+        {safeImages.length > 1 && (
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-1">
+            {safeImages.map((_, index) => (
+              <button 
+                key={index} 
+                onClick={() => navigateImage(index)}
+                className={`h-2 w-2 rounded-full ${index === currentImageIndex ? 'bg-blue-600' : 'bg-gray-300'}`} 
+                aria-label={`View image ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
+        
+        {/* Image Counter */}
+        {safeImages.length > 1 && (
+          <div className="absolute top-2 left-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full flex items-center">
+            <Image className="h-3 w-3 mr-1" />
+            {currentImageIndex + 1}/{safeImages.length}
+          </div>
+        )}
       </div>
 
-      {/* Details Section - Flexible Height */}
+      {/* Details Section */}
       <div className="p-4 space-y-3 flex-grow flex flex-col">
         {/* Title and Description */}
         <div className="flex-grow">
@@ -96,10 +136,18 @@ const SubmittedItemCard = ({
               {itemType || "Unknown Item"}
             </h3>
           </div>
-          <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed line-clamp-3">
             {description || "No description available"}
           </p>
         </div>
+
+        {/* Found By Information */}
+        {foundBy && (
+          <div className="text-xs text-gray-500 flex items-center">
+            <User className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0" />
+            <span>Found by: {foundBy}</span>
+          </div>
+        )}
 
         {/* Location and Time */}
         <div className="text-xs text-gray-500 space-y-1 mt-auto flex-shrink-0">
@@ -111,11 +159,6 @@ const SubmittedItemCard = ({
             <Calendar className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0" />
             <span>{time ? new Date(time).toLocaleDateString() : "N/A"}</span>
           </div>
-          {uniqueMarks && (
-            <div className="mt-1 text-xs text-gray-600">
-              <span className="font-medium">Unique Marks:</span> {uniqueMarks}
-            </div>
-          )}
         </div>
 
         {/* Action Buttons */}
@@ -131,6 +174,7 @@ const SubmittedItemCard = ({
                 className="inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg 
                           bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 
                           shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                disabled={status?.toLowerCase() === "received" || status?.toLowerCase() === "rejected"}
               >
                 <Check className="h-3 w-3" /> Accept
               </button>
@@ -139,6 +183,7 @@ const SubmittedItemCard = ({
                 className="inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg 
                           bg-red-600 text-white hover:bg-red-700 active:bg-red-800 
                           shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                disabled={status?.toLowerCase() === "received" || status?.toLowerCase() === "rejected"}
               >
                 <X className="h-3 w-3" /> Reject
               </button>

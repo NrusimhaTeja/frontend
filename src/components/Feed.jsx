@@ -4,6 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import LostItemCard from "./LostItemCard";
 import ReceivedItemCard from "./ReceivedItemCard";
 import SubmittedItemCard from "./SubmittedItemCard";
+import VerifiedItemCard from "./VerifiedItemCard";
 import AddButton from "./AddButton";
 import FoundItemForm from "./FoundItemForm";
 import LostItemForm from "./LostItemForm";
@@ -20,20 +21,26 @@ const Feed = () => {
 
   // Define tabs based on user role
   const getTabs = () => {
-    // Base tabs for all users
-    const baseTabs = [
-      { id: "received", label: "Found Items" },
-      { id: "lost", label: "Lost Items" }
-    ];
+    let tabs = [];
     
-    // Add submitted tab for security roles
-    if (user?.role === "securityGuard" || user?.role === "securityOfficer" || user?.role === "admin") {
-      baseTabs.push({ id: "submitted", label: "Submitted Items" });
+    // All users can see lost items
+    tabs.push({ id: "lost", label: "Lost Items" });
+    
+    // All users can see found/verified items
+    tabs.push({ id: "verified", label: "Found Items" });
+    
+    // Security Guard can see submitted items
+    if (user?.role === "securityGuard") {
+      tabs.push({ id: "submitted", label: "Submitted Items" });
     }
     
-    return baseTabs;
+    // Security Officer can see received items
+    if (user?.role === "securityOfficer" || user?.role === "admin") {
+      tabs.push({ id: "received", label: "Received Items" });
+    }
+    
+    return tabs;
   };
-
 
   const tabs = getTabs();
 
@@ -46,11 +53,7 @@ const Feed = () => {
       }
       console.log("Fetching items for status:", status);
       
-      // Map the tab ID to the correct API endpoint status parameter
-      let apiStatus = status;
-      console.log("yo")
-      
-      const response = await axios.get(`${BASE_URL}api/items/status/${apiStatus}`, {
+      const response = await axios.get(`${BASE_URL}api/items/status/${status}`, {
         withCredentials: true,
       });
       console.log("API Response:", response.data);
@@ -67,29 +70,32 @@ const Feed = () => {
   };
 
   // Set initial tab based on user role
-useEffect(() => {
-  if (!user) return;
-  const availableTabs = getTabs().map(tab => tab.id);
-  let initialTab = availableTabs[0];
-  
-  if (user?.role === "securityGuard") {
-    initialTab = "submitted"; // Default to 'submitted' for securityGuard
-  }
-  console.log(initialTab)
+  useEffect(() => {
+    if (!user) return;
+    
+    const availableTabs = getTabs().map(tab => tab.id);
+    
+    // Set default tab based on user role
+    if (user?.role === "securityGuard" && availableTabs.includes("submitted")) {
+      setSelectedTab("submitted");
+    } else if ((user?.role === "securityOfficer" || user?.role === "admin") && availableTabs.includes("received")) {
+      setSelectedTab("received");
+    } else {
+      // Default for regular users
+      setSelectedTab("lost");
+    }
+  }, [user?.role]);
 
-  setSelectedTab(initialTab);
-}, [user?.role]);
-
-// Fetch items only AFTER selectedTab is set
-useEffect(() => {
-  if (selectedTab) {
-    fetchItems(selectedTab);
-  }
-}, [selectedTab]);
+  // Fetch items only AFTER selectedTab is set
+  useEffect(() => {
+    if (selectedTab) {
+      fetchItems(selectedTab);
+    }
+  }, [selectedTab]);
 
   const renderForm = () => {
     switch (selectedTab) {
-      case 'received':
+      case 'verified':
         return (
           <FoundItemForm
             isOpen={isFormOpen}
@@ -112,6 +118,18 @@ useEffect(() => {
 
   const renderItemCard = (item) => {
     switch (selectedTab) {
+      case 'verified':
+        return (
+          <VerifiedItemCard
+            key={item._id}
+            itemId={item._id}
+            verifiedDescription={item.verifiedDescription}
+            images={item.images}
+            time={item.time}
+            status={item.status}
+            questions={item.questions}
+          />
+        );
       case 'received':
         return (
           <ReceivedItemCard
@@ -119,13 +137,12 @@ useEffect(() => {
             itemId={item._id}
             itemType={item.itemType}
             description={item.description}
+            foundBy={item.foundBy}
             location={item.location}
-            status={item.status}
-            uniqueMarks={item.uniqueMarks}
-            currentHolder={item.currentHolder}
+            receivedBy={item.receivedBy}
             images={item.images}
-            questions={item.questions}
             time={item.time}
+            status={item.status}
           />
         );
       case 'lost':
@@ -136,11 +153,10 @@ useEffect(() => {
             itemType={item.itemType}
             description={item.description}
             location={item.location}
-            status={item.status}
-            uniqueMarks={item.uniqueMarks}
-            owner={item.owner}
+            reportedBy={item.reportedBy}
             images={item.images}
             time={item.time}
+            status={item.status}
           />
         );
       case 'submitted':
@@ -151,12 +167,10 @@ useEffect(() => {
             itemType={item.itemType}
             description={item.description}
             location={item.location}
-            status={item.status}
-            uniqueMarks={item.uniqueMarks}
             foundBy={item.foundBy}
             images={item.images}
             time={item.time}
-            token={item.token}
+            status={item.status}
             onStatusUpdate={() => fetchItems(selectedTab)}
           />
         );
@@ -166,7 +180,7 @@ useEffect(() => {
   };
 
   // Show add button only for certain tabs
-  const showAddButton = selectedTab === 'lost' || selectedTab === 'received';
+  const showAddButton = selectedTab === 'lost' || selectedTab === 'verified';
 
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
