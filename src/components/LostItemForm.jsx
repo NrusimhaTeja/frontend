@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { X, Upload, Calendar, Clock, MapPin } from "lucide-react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 
 const LostItemForm = ({ isOpen, onClose, onItemAdded }) => {
   const [loading, setLoading] = useState(false);
@@ -66,7 +65,7 @@ const LostItemForm = ({ isOpen, onClose, onItemAdded }) => {
 
       // Send the form data to your API
       const response = await axios.post(
-        BASE_URL + "api/items/report/lost",
+        import.meta.env.VITE_REACT_APP_BACKEND_BASEURL + "api/items/report/lost",
         formDataObj,
         {
           withCredentials: true,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { X, MessageCircle } from "lucide-react";
-import { BASE_URL } from "../utils/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ImageUploader from "./ImageUploader";
@@ -55,7 +54,7 @@ const ReturnItemModal = ({ isOpen, onClose, itemId, title }) => {
       }
 
       const response = await axios.post(
-        `${BASE_URL}request/send/return/${itemId}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}request/send/return/${itemId}`,
         formData,
         {
           withCredentials: true,

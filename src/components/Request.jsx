@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 import { useSelector } from "react-redux";
 import RequestCard from "./RequestCard";
 import ReceivedRequestCard from "./ReceivedRequestCard";
@@ -18,8 +17,8 @@ const Request = () => {
     try {
       // Use different endpoint based on user role
       const endpoint = isSecurityOfficer 
-        ? `${BASE_URL}api/items/received-requests` 
-        : `${BASE_URL}api/items/my-request-tokens`;
+        ? `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/received-requests` 
+        : `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/my-request-tokens`;
       
       const response = await axios.get(endpoint, {
         withCredentials: true,

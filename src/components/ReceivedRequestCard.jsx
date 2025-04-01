@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MapPin, Tag, Calendar, User, Key, CheckCircle, Clock, MessageCircle, Image, Check, X, ChevronDown, ChevronUp } from "lucide-react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 
 const DEFAULT_IMAGE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
 
@@ -52,7 +51,7 @@ const ReceivedRequestCard = ({ request }) => {
     setSuccessMessage("");
     try {
       await axios.post(
-        `${BASE_URL}api/items/verify/${request._id}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/verify/${request._id}`,
         { status: 'approved' },
         { withCredentials: true }
       );
@@ -71,7 +70,7 @@ const ReceivedRequestCard = ({ request }) => {
     setSuccessMessage("");
     try {
       await axios.post(
-        `${BASE_URL}api/items/verify/${request._id}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/verify/${request._id}`,
         { status: 'rejected' },
         { withCredentials: true }
       );

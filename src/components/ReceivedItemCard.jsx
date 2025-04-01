@@ -11,7 +11,6 @@ import {
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { BASE_URL } from "../utils/constants";
 
 const DEFAULT_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
@@ -92,7 +91,7 @@ const ReceivedItemCard = ({
 
       // Make the API call with JSON
       const response = await axios.post(
-        `${BASE_URL}api/items/${itemId}/verify`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/${itemId}/verify`,
         requestData,
         {
           withCredentials: true,

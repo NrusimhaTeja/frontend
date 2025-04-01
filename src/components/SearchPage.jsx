@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SubmittedItemCard from "./SubmittedItemCard";
 
@@ -27,7 +26,7 @@ const SearchPage = () => {
         // Check if the query looks like a token (simple validation)
         if (searchQuery && searchQuery.startsWith("ITEM-")) {
           // Make API call to get item by token
-          const response = await axios.get(`${BASE_URL}api/items/token/${searchQuery}`, {
+          const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/token/${searchQuery}`, {
             withCredentials: true,
           });
           

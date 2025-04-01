@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BASE_URL } from "../utils/constants";
 
 const Signup = ({ onClose, onSignupSuccess }) => {
   const fileInputRef = useRef(null);
@@ -102,7 +101,7 @@ const Signup = ({ onClose, onSignupSuccess }) => {
         signupData.append("profilePhoto", profilePhoto);
       }
 
-      const response = await axios.post(BASE_URL + "api/auth/register", signupData, {
+      const response = await axios.post(import.meta.env.VITE_REACT_APP_BACKEND_BASEURL + "api/auth/register", signupData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addUser } from "../utils/userSlice";
-import { BASE_URL } from "../utils/constants";
 import Signup from "./Signup";
 
 const Login = () => {
@@ -16,7 +15,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const data = await axios.post(
-        BASE_URL + "api/auth/login",
+        import.meta.env.VITE_REACT_APP_BACKEND_BASEURL + "api/auth/login",
         {
           email,
           password,

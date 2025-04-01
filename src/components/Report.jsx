@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 import { useSelector } from "react-redux";
 import ReportCard from "./ReportCard";
 
@@ -15,7 +14,7 @@ const Report = () => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BASE_URL}api/items/my-item-tokens`, {
+        const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/my-item-tokens`, {
           withCredentials: true,
         });
         console.log(response.data);

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { X, MessageCircle } from "lucide-react";
-import { BASE_URL } from "../utils/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ImageUploader from "./ImageUploader";
@@ -71,7 +70,7 @@ const ClaimItemModal = ({ isOpen, onClose, itemId, questions = [], title }) => {
 
       // Detailed axios config
       const response = await axios.post(
-        `${BASE_URL}api/items/${itemId}/claim`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/${itemId}/claim`,
         formDataObj,
         {
           withCredentials: true,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MapPin, Tag, Calendar, Check, X, User, Image } from "lucide-react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 
 const DEFAULT_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
@@ -58,7 +57,7 @@ const SubmittedItemCard = ({
     setIsUpdating(true);
     try {
       await axios.put(
-        `${BASE_URL}api/items/${itemId}/review`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/${itemId}/review`,
         { 
           status: selectedAction,
           notes: notes 

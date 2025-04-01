@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BASE_URL } from "../utils/constants";
 import LostItemCard from "./LostItemCard";
 import ReceivedItemCard from "./ReceivedItemCard";
 import SubmittedItemCard from "./SubmittedItemCard";
@@ -53,7 +52,7 @@ const Feed = () => {
       }
       console.log("Fetching items for status:", status);
       
-      const response = await axios.get(`${BASE_URL}api/items/status/${status}`, {
+      const response = await axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/status/${status}`, {
         withCredentials: true,
       });
       console.log("API Response:", response.data);
