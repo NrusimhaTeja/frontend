@@ -14,6 +14,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
+      console.log("yo")
       const data = await axios.post(
         import.meta.env.VITE_REACT_APP_BACKEND_BASEURL + "api/auth/login",
         {

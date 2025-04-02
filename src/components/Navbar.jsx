@@ -20,23 +20,6 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-
-    // Check if the input looks like a token (simple validation)
-    const isTokenSearch = searchQuery.trim().startsWith("ITEM-");
-
-    if (isTokenSearch) {
-      // Navigate directly to search page for token search
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      // Optionally, you could handle non-token searches differently
-      // For example, show an error or navigate to a general search page
-      alert("Please enter a valid item token (format: ITEM-XXXXXXXX)");
-    }
-
-    setSearchQuery("");
-  };
   // Check if user has security role
   const isSecurityRole =
     user && (user.role === "securityGuard" || user.role === "securityOfficer");
@@ -59,38 +42,6 @@ const Navbar = () => {
 
           {user && (
             <div className="flex items-center space-x-4">
-              {/* Search bar for security roles */}
-              {isSecurityRole && (
-                <form onSubmit={handleSearch} className="relative">
-                  <input
-                    type="text"
-                    placeholder="Enter item token (ITEM-XXX)"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="py-1 pl-3 pr-10 rounded-md text-sm focus:ring-2 bg-white focus:ring-blue-500 focus:outline-none w-48 md:w-64"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md hover:bg-blue-100 text-gray-500"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </button>
-                </form>
-              )}
-
               <span className="text-sm font-medium text-white">
                 Welcome, {user.firstName}
               </span>
