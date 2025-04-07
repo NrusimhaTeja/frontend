@@ -13,7 +13,7 @@ const ReportCard = ({
   token,
 }) => {
   const safeImages =
-    images && images.length > 0 ? images : [{ url: DEFAULT_IMAGE }];
+    images && images.length > 0 ? images : [{ url: "../../public/assets/found.jpg" }];
     
   return (
     <>

@@ -22,7 +22,7 @@ const ReceivedRequestCard = ({ request }) => {
   // Get item images
   const itemImages = itemId.images && itemId.images.length > 0 
     ? itemId.images 
-    : [{ url: DEFAULT_IMAGE }];
+    : [{ url: "../../public/assets/found.jpg" }];
 
   // Format date for display
   const formatDate = (dateString) => {

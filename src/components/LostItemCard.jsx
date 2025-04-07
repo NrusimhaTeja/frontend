@@ -27,7 +27,7 @@ const LostItemCard = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const safeImages =
-    images && images.length > 0 ? images : [{ url: DEFAULT_IMAGE }];
+    images && images.length > 0 ? images : [{ url: "../../public/assets/lost.jpg" }];
 
   return (
     <div className="w-full max-w-xs mx-auto rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden h-full flex flex-col">

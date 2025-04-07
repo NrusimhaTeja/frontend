@@ -17,11 +17,12 @@ const Body = () => {
       console.log(user.data)
       dispatch(addUser(user.data));
     } catch (err) {
-      if (err.response?.status === 401) {
-        navigate("/login");
-      } else {
-        console.log("yo", err.message);
-      }
+      navigate("/login")
+      // if (err.response?.status === 401) {
+      //   navigate("/login");
+      // } else {
+      //   console.log("yo", err.message);
+      // }
     }
   };
 

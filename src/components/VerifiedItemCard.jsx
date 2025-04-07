@@ -20,7 +20,7 @@ const VerifiedItemCard = ({
   const user = useSelector((store) => store.user);
 
   const safeImages =
-    images && images.length > 0 ? images : [{ url: DEFAULT_IMAGE }];
+    images && images.length > 0 ? images : [{ url: "../../public/assets/found.jpg"}];
 
   const handleClaim = () => {
     setIsClaimModalOpen(true);

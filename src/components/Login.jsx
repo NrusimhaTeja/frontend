@@ -6,15 +6,14 @@ import { addUser } from "../utils/userSlice";
 import Signup from "./Signup";
 
 const Login = () => {
-  const [email, setEmail] = useState("Nrusimha@gmail.com");
-  const [password, setPassword] = useState("Nrusimha@11");
+  const [email, setEmail] = useState("student1@gmail.com");
+  const [password, setPassword] = useState("stu1@1");
   const [showSignupModal, setShowSignupModal] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
     try {
-      console.log("yo")
       const data = await axios.post(
         import.meta.env.VITE_REACT_APP_BACKEND_BASEURL + "api/auth/login",
         {
@@ -25,11 +24,16 @@ const Login = () => {
           withCredentials: true,
         }
       );
-      console.log(data.data);
-      dispatch(addUser(data.data));
-      navigate("/");
+      if (data.data.message !== "Invalid Credentials") {
+        dispatch(addUser(data.data));
+        navigate("/");
+      } else {
+        throw new Error("Invalid Credentials");
+      }
     } catch (err) {
       console.log(err.message);
+      setEmail("");
+      setPassword("");
     }
   };
 
@@ -55,8 +59,8 @@ const Login = () => {
         <div className="mt-8 bg-white py-8 px-4 shadow-lg rounded-xl sm:px-10 border border-gray-100">
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div>
-              <label 
-                htmlFor="email" 
+              <label
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
                 Email address
@@ -94,7 +98,10 @@ const Login = () => {
 
             <div className="flex items-center justify-end">
               <div className="text-sm">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                <a
+                  href="#"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
                   Forgot your password?
                 </a>
               </div>
@@ -112,8 +119,8 @@ const Login = () => {
 
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-600">
-              Don't have an account?{' '}
-              <button 
+              Don't have an account?{" "}
+              <button
                 onClick={() => setShowSignupModal(true)}
                 className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
               >
@@ -126,7 +133,7 @@ const Login = () => {
 
       {/* Signup Modal */}
       {showSignupModal && (
-        <Signup 
+        <Signup
           onClose={() => setShowSignupModal(false)}
           onSignupSuccess={handleSignupSuccess}
         />

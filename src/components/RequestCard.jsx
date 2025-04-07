@@ -14,11 +14,11 @@ const RequestCard = ({ verifiedDescription, images, token }) => {
         {/* Image Section */}
         <div className="relative h-48 overflow-hidden">
           <img
-            src={safeImages[0].url || DEFAULT_IMAGE}
+            src={safeImages[0].url || "../../public/assets/found.jpg"}
             alt="Verified Item"
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.target.src = DEFAULT_IMAGE;
+              e.target.src = "../../public/assets/found.jpg";
             }}
           />
         </div>

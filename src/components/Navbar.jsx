@@ -55,7 +55,7 @@ const Navbar = () => {
                     <div className="h-8 w-8 overflow-hidden rounded-full ring-2 ring-blue-900">
                       <img
                         src={
-                          user.profilePhoto.url || "/api/placeholder/400/320"
+                          user?.profilePhoto?.url || "../../public/assets/profile.jpg"
                         }
                         alt="User"
                         className="h-full w-full object-cover"
@@ -63,14 +63,6 @@ const Navbar = () => {
                     </div>
                   </button>
                   <ul className="dropdown-content menu menu-sm mt-3 w-52 rounded-lg bg-white p-2 shadow-lg ring-1 ring-black ring-opacity-5">
-                    <li>
-                      <Link
-                        to="/profile"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md"
-                      >
-                        <span>Profile</span>
-                      </Link>
-                    </li>
                     <li>
                       <Link
                         to="/report"
@@ -86,11 +78,6 @@ const Navbar = () => {
                       >
                         Requests
                       </Link>
-                    </li>
-                    <li>
-                      <a className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-                        Settings
-                      </a>
                     </li>
                     <li className="border-t border-gray-200 mt-2 pt-2">
                       <button
