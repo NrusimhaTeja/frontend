@@ -6,7 +6,7 @@ const DEFAULT_IMAGE =
 
 const RequestCard = ({ verifiedDescription, images, token }) => {
   const safeImages =
-    images && images.length > 0 ? images : [{ url: DEFAULT_IMAGE }];
+    images && images.length > 0 ? images : [{ url: "/assets/found.jpg" }];
 
   return (
     <>
@@ -14,11 +14,11 @@ const RequestCard = ({ verifiedDescription, images, token }) => {
         {/* Image Section */}
         <div className="relative h-48 overflow-hidden">
           <img
-            src={safeImages[0].url || "../../public/assets/found.jpg"}
+            src={safeImages[0].url || "/public/assets/found.jpg"}
             alt="Verified Item"
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.target.src = "../../public/assets/found.jpg";
+              e.target.src = "/assets/found.jpg";
             }}
           />
         </div>

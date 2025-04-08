@@ -37,7 +37,7 @@ const SubmittedItemCard = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const safeImages =
-    images && images.length > 0 ? images : [{ url: "../../public/assets/found.jpg" }];
+    images && images.length > 0 ? images : [{ url: "/assets/found.jpg" }];
 
   const handleActionClick = (action) => {
     setSelectedAction(action);
