@@ -7,6 +7,8 @@ import {
   Trash2,
   User,
   BadgeCheck,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -40,6 +42,7 @@ const ReceivedItemCard = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [questions, setQuestions] = useState([{ id: 1, text: "" }]);
   const [verifiedDescription, setVerifiedDescription] = useState("");
+  const [imagesPublic, setImagesPublic] = useState(false);
   const [loading, setLoading] = useState(false);
   const user = useSelector((store) => store.user);
 
@@ -68,8 +71,6 @@ const ReceivedItemCard = ({
     );
   };
 
-  // In your handleSubmitQuestions function, modify how you're handling FormData:
-
   const handleSubmitQuestions = async (e) => {
     e.preventDefault();
 
@@ -80,10 +81,11 @@ const ReceivedItemCard = ({
     setLoading(true);
 
     try {
-      // Instead of using FormData, send a regular JSON object
+      // Send a regular JSON object
       const requestData = {
         verifiedDescription: verifiedDescription,
         questions: validQuestions.map((q) => q.text),
+        imagesPublic: imagesPublic,
       };
 
       // Debug logs
@@ -91,7 +93,9 @@ const ReceivedItemCard = ({
 
       // Make the API call with JSON
       const response = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}api/items/${itemId}/verify`,
+        `${
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+        }api/items/${itemId}/verify`,
         requestData,
         {
           withCredentials: true,
@@ -104,7 +108,7 @@ const ReceivedItemCard = ({
       console.log("Server Response:", response.data);
 
       // Show success toast
-      toast.success("Questions submitted successfully", {
+      toast.success("Item verified successfully", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -117,13 +121,15 @@ const ReceivedItemCard = ({
       setIsPostModalOpen(false);
       setQuestions([{ id: 1, text: "" }]);
       setVerifiedDescription("");
+      setImagesPublic(false);
     } catch (error) {
-      console.error("Error submitting questions:", error);
-      toast.error("Failed to submit questions. Please try again.");
+      console.error("Error submitting verification:", error);
+      toast.error("Failed to verify item. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   const navigateImage = (index) => {
     setCurrentImageIndex(index);
   };
@@ -228,19 +234,19 @@ const ReceivedItemCard = ({
                  bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800
                  shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                Post Questions
+                Verify Item
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Post Questions Modal */}
+      {/* Verification Modal */}
       {isPostModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Post Questions for {itemType || "Item"}
+              Verify {itemType || "Item"}
             </h2>
 
             <form onSubmit={handleSubmitQuestions}>
@@ -262,9 +268,31 @@ const ReceivedItemCard = ({
                 />
               </div>
 
+              {/* Images Public Toggle */}
+              <div className="mb-4">
+                <div className="flex items-center">
+                  <input
+                    id="images-public"
+                    type="checkbox"
+                    checked={imagesPublic}
+                    onChange={(e) => setImagesPublic(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="images-public"
+                    className="ml-2 flex items-center text-sm font-medium text-gray-700"
+                  >
+                    <>
+                      <Eye className="mr-1 h-4 w-4 text-blue-600" /> Make images
+                      public
+                    </>
+                  </label>
+                </div>
+              </div>
+
               <div className="border-t border-gray-200 my-4 pt-4">
                 <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Questions
+                  Questions for Claimers
                 </h3>
                 <div className="space-y-4 mb-6">
                   {questions.map((question) => (
@@ -313,7 +341,7 @@ const ReceivedItemCard = ({
                   disabled={loading}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-400"
                 >
-                  {loading ? "Submitting..." : "Submit"}
+                  {loading ? "Verifying..." : "Verify Item"}
                 </button>
               </div>
             </form>

@@ -9,11 +9,13 @@ const Login = () => {
   const [email, setEmail] = useState("student1@gmail.com");
   const [password, setPassword] = useState("stu1@1");
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
     try {
+      setError("");
       const data = await axios.post(
         import.meta.env.VITE_REACT_APP_BACKEND_BASEURL + "api/auth/login",
         {
@@ -24,15 +26,22 @@ const Login = () => {
           withCredentials: true,
         }
       );
+      
       if (data.data.message !== "Invalid Credentials") {
         dispatch(addUser(data.data));
-        navigate("/");
+        
+        // Check if user is admin and redirect accordingly
+        if (data.data.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       } else {
         throw new Error("Invalid Credentials");
       }
     } catch (err) {
       console.log(err.message);
-      setEmail("");
+      setError("Invalid email or password. Please try again.");
       setPassword("");
     }
   };
@@ -57,6 +66,12 @@ const Login = () => {
         </div>
 
         <div className="mt-8 bg-white py-8 px-4 shadow-lg rounded-xl sm:px-10 border border-gray-100">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div>
               <label

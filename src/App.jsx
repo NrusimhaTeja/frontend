@@ -8,7 +8,7 @@ import Feed from "./components/Feed";
 import Request from "./components/Request";
 import SearchPage from "./components/SearchPage";
 import Report from "./components/Report";
-
+import AdminPage from "./components/AdminPage"; 
 
 const App = () => {
   return (
@@ -22,6 +22,7 @@ const App = () => {
               <Route path="/request" element={<Request />}></Route>
               <Route path="/search" element={<SearchPage />}></Route>
               <Route path="/report" element={<Report />}></Route>
+              <Route path="/admin" element={<AdminPage />}></Route> 
             </Route>
           </Routes>
         </BrowserRouter>
